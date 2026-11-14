@@ -2,15 +2,14 @@
     "@context": "https://w3id.org/codemeta/3.0",
     "@type": "SoftwareSourceCode",
     "name": "TEMPLATE-XREF",
-    "description": "TODO: one or two sentences on what the crosswalk/workflow does",
-    "codeRepository": "https://github.com/Ecosystem-Indicators-Workflows/TEMPLATE-XREF",
-    "issueTracker": "https://github.com/Ecosystem-Indicators-Workflows/TEMPLATE-XREF/issues",
-    "readme": "https://github.com/Ecosystem-Indicators-Workflows/TEMPLATE-XREF/blob/main/README.md",
-    "identifier": "TODO: Zenodo or other DOI once released",
+    "description": "Cross-referencing the `Regional Ecosystems` of `Queensland` to the IUCN Global Ecosystem Typology",
+    "codeRepository": "https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF",
+    "issueTracker": "https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF/issues",
+    "readme": "https://raw.githubusercontent.com/Ecosystem-Indicators-Workflows/QLDREDD-XREF/refs/heads/main/README.md",
     "version": "0.1.0",
-    "dateCreated": "TODO: YYYY-MM-DD",
-    "dateModified": "TODO: YYYY-MM-DD",
-    "license": "https://spdx.org/licenses/TODO.html",
+    "dateCreated": "2026-11-15",
+    "dateModified": "2026-11-15",
+    "license": "https://spdx.org/licenses/MIT.html",
     "developmentStatus": "active",
     "programmingLanguage": [
         {
@@ -39,24 +38,70 @@
         "IUCN Global Ecosystem Typology",
         "FAIR",
         "vocabulary crosswalk",
-        "TODO"
+        "Queensland"
     ],
     "author": [
-        {
-            "@type": "Person",
-            "@id": "https://orcid.org/TODO",
-            "givenName": "TODO",
-            "familyName": "TODO",
-            "email": "TODO",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "TODO"
-            }
-        }
-    ],
-    "contributor": [],
+    {
+        "@type": "Person",
+      "familyName": "Ferrer-Paris",
+      "givenName": "José R.",
+      "@id": "https://orcid.org/0000-0002-9554-3395",
+      "affiliation": [{
+        "@type": "Organization",
+        "name":"Centre for Ecosystem Science, UNSW Sydney"
+      },{
+        "@type": "Organization",
+        "name":"IUCN Commission on Ecosystem Management"
+      }]
+    },
+    {
+        "@type": "Person",
+      "familyName": "Tozer",
+      "givenName": "Mark G.",
+      "@id": "https://orcid.org/0000-0002-7373-0077",
+      "affiliation": [{
+        "@type": "Organization",
+        "name":"Centre for Ecosystem Science, UNSW Sydney"
+      }]
+    },
+    {
+        "@type": "Person",
+      "familyName": "Keith",
+      "givenName": "David",
+      "@id": "https://orcid.org/0000-0002-7627-4150",
+      "affiliation": [{
+        "@type": "Organization",
+        "name":"Centre for Ecosystem Science, UNSW Sydney"
+      },{
+        "@type": "Organization",
+        "name":"IUCN Commission on Ecosystem Management"
+      }]
+    }],
+    "contributor": [
+    {
+      "@type": "Person",
+      "familyName": "Gould", 
+      "givenName":"Elliot",
+      "@id": "https://orcid.org/0000-0002-6585-538X",
+      "affiliation": {
+        "@type": "Organization",
+        "name":"Centre for Ecosystem Science, UNSW Sydney"
+      }
+    },
+    {
+      "familyName": "Singh", 
+      "givenName":"Abhimanyu Raj",
+      "@id": "https://orcid.org/0000-0002-2279-7060",
+      "affiliation": [{
+        "@type": "Organization",
+        "name":"Centre for Ecosystem Science, UNSW Sydney"
+      },{
+        "@type": "Organization",
+        "name":"QCIF"
+      }]
+    }],
     "maintainer": {
-        "@id": "https://orcid.org/TODO"
+        "@id": "https://orcid.org/0000-0002-9554-3395"
     },
     "isPartOf": {
         "@type": "SoftwareSourceCode",
@@ -65,9 +110,10 @@
     },
     "funder": {
         "@type": "Organization",
-        "name": "Australian Research Data Commons (ARDC)"
+        "name": "Australian Research Data Commons (ARDC)",
+        "@id": "https://ror.org/038sjwq14"
     },
-    "funding": "TODO: grant ID, or delete if not applicable",
+    "funding": "https://doi.org/10.3565/j5sq-a757",
     "referencePublication": [],
     "continuousIntegration": "TODO: CI URL, or delete"
 }

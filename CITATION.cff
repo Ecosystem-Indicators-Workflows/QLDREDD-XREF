@@ -23,5 +23,5 @@ repository-code: >-
   https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF
 license: CC-BY-4.0
 commit: 40ce3b35e467d3cf8f93dcfbc0f0b7221608c211
-version: 0.0.1
-date-released: '2026-11-10'
+version: 0.1.0
+date-released: '2026-11-15'
