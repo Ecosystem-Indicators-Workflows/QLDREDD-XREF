@@ -1,10 +1,10 @@
 {
   "repository": "Ecosystem-Indicators-Workflows/QLDREDD-XREF",
-  "commit": "9034cf4",
+  "commit": "1e39a36",
   "date": "2026-11-14",
   "checklist": "ARDC FAIR Software Checklist v0.2",
-  "ardc_url": "https://fairsoftwarechecklist.net/v0.2?f=21&a=30112&i=21201&r=023",
-  "total": 21,
+  "ardc_url": "https://fairsoftwarechecklist.net/v0.2?f=21&a=30112&i=21000&r=023",
+  "total": 18,
   "total_max": 33,
   "questions_met": 6,
   "all_met": false,
@@ -27,10 +27,10 @@
     },
     {
       "principle": "Interoperable",
-      "current": 6,
+      "current": 3,
       "target": 12,
       "max": 12,
-      "pct": 50,
+      "pct": 25,
       "_row": "Interoperable"
     },
     {
@@ -120,7 +120,7 @@
       "target": 3,
       "max": 3,
       "met": false,
-      "has": "Open formats: json, csv",
+      "has": "Open formats: csv, json",
       "needs": "No open geospatial formats (GeoTIFF/COG, GeoPackage)"
     },
     {
@@ -136,12 +136,12 @@
     {
       "id": "i:q2",
       "label": "Dependencies specified",
-      "current": 2,
+      "current": 0,
       "target": 3,
       "max": 3,
       "met": false,
-      "has": "codemeta.json lists dependencies",
-      "needs": "Versions not pinned (add renv.lock)"
+      "has": "",
+      "needs": "No dependency file (renv.lock / requirements.txt)"
     },
     {
       "id": "i:q3",
@@ -156,12 +156,12 @@
     {
       "id": "i:q4",
       "label": "Links to related data",
-      "current": 1,
+      "current": 0,
       "target": 2,
       "max": 2,
       "met": false,
-      "has": "Data URL in README",
-      "needs": "No data references in CITATION.cff (add input DOIs)"
+      "has": "",
+      "needs": "No links to related data"
     },
     {
       "id": "r:q0",
