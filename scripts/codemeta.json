@@ -83,10 +83,10 @@
       "familyName": "Gould", 
       "givenName":"Elliot",
       "@id": "https://orcid.org/0000-0002-6585-538X",
-      "affiliation": {
+      "affiliation": [{
         "@type": "Organization",
         "name":"Centre for Ecosystem Science, UNSW Sydney"
-      }
+      }]
     },
     {
       "familyName": "Singh", 
