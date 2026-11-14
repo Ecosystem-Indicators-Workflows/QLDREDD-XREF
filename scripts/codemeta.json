@@ -99,6 +99,15 @@
         "@type": "Organization",
         "name":"QCIF"
       }]
+    },
+    {
+      "familyName": "Addicott", 
+      "givenName":"Eda",
+      "@id": "https://orcid.org/0000-0002-4806-9205",
+      "affiliation": [{
+        "@type": "Organization",
+        "name":"James Cook University"
+      }]
     }],
     "maintainer": {
         "@id": "https://orcid.org/0000-0002-9554-3395"
