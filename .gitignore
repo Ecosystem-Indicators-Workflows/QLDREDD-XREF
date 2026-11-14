@@ -3,7 +3,11 @@
 .RData
 .httr-oauth
 .DS_Store
-/.quarto/
-**/*.quarto_ipynb
-results-*/*
-!results-*/README.qmd
+.quarto
+.venv
+.env_local
+data/source-data
+.vscode/*
+results/*/*
+!results/*/README.qmd
+*/air.toml
