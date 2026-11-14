@@ -1,0 +1,57 @@
+# Queensland Regional Ecosystems
+
+The manual of @Nelder_2023b describes methodology and methods for classification, mapping and collection of site data for vegetation and regional ecosystems in Queensland. Includes detailed version history of the manual from 1993 to 2023. Clear separation of classification and mapping, see their *Figure 1: Summary of vegetation survey and mapping processes used in Australia*.
+
+## Concepts 
+
+From the manual: *Broad vegetation groups (BVGs) are a higher level grouping of vegetation units or ecosystems...  In order to provide an overview and/or map vegetation across the state or a bioregion and allow comparison with other states, the vegetation units and regional ecosystems are amalgamated into the higher-level classification of BVGs.*
+
+> *During the 1990s the regional ecosystems (RE) classification framework was developed and widely adopted in Queensland to assist in planning, regulation and management for biodiversity, both on and off conservation reserve estate... Updated regional ecosystem descriptions in the format of Sattler and Williams (1999) are maintained in REDD.* [@Nelder_2023]
+
+The Regional Ecosystem Description Database or REDD is available online [@REDD_2024]. It contains descriptions of more than 1,200 REs in Queensland.
+
+Assignment of RE to the ecosystem functional groups (level 3 of the GET) is currently based on preliminary analysis by experts following cross-referencing guidelines [@IUCN_2025]. 
+
+```{mermaid}
+flowchart LR
+    Manual("Survey and mapping<br>methods") --> BVG[Broad<br>Vegetation Groups] & RE[Regional ecosystems]
+```
+
+
+## Description database
+
+The REDD can be downloaded as a file in csv format from this url:
+
+```sh
+wget --continue https://www.qld.gov.au/__data/assets/file/0026/160667/REDD_v13.1_2024.csv --output-document=$OUTPUT_DIR/REDD_v13.1_2024.csv
+```
+
+## Spatial data download
+
+The *Biodiversity status of 2021 remnant regional ecosystems – Queensland* dataset was published by the Department of Environment, Science and Innovation. This is a foundational dataset that provides a geographical representation of the 2021 Remnant Regional Ecosystems at a map scale of 1:100,000 and 1:50,000, 1:25,000 in part, based on surveys of vegetation communities and related landform, soils and geology.
+
+We downloaded Version 13.1 from 2021 from the [Queensland Spatial Catalogue](https://qldspatial.information.qld.gov.au/catalogue/custom/detail.page?fid={8FDF54D2-654C-4822-8295-1D8E8E772373}), and copied the spatial data into a local folder for further processing.
+
+::: {.callout-caution}
+Data download from Queensland Spatial Catalogue requires filling a form to request a link for downloading. This link is sent via email and is only accessible for a limited time. This data source cannot be integrated into this reproducible workflow. 
+:::
+
+## Relationships
+
+Mapping units in these spatial product (`QLD_RE`) are linked to the Regional Ecosystems Description Database (`REDD`) via the field `NAME` in `REDD` and the fields `re1` to `re5` in the `QLD_RE` attribute table.
+
+```{mermaid}
+erDiagram 
+    REDD }|--o{ QLD_RE : "NAME to rex (x in 1,2,...)"
+    REDD {
+        string NAME PK
+        string PUBLIC_COMMENT
+        string ETC
+    }
+    QLD_RE {
+        int fid PK
+        string rex FK
+        number pcx
+        string ETC
+    }
+```
