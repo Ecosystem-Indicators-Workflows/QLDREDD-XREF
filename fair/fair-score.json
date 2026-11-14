@@ -1,6 +1,6 @@
 {
   "repository": "Ecosystem-Indicators-Workflows/QLDREDD-XREF",
-  "commit": "e7d4aa8",
+  "commit": "9034cf4",
   "date": "2026-11-14",
   "checklist": "ARDC FAIR Software Checklist v0.2",
   "ardc_url": "https://fairsoftwarechecklist.net/v0.2?f=21&a=30112&i=21201&r=023",
@@ -120,7 +120,7 @@
       "target": 3,
       "max": 3,
       "met": false,
-      "has": "Open formats: json",
+      "has": "Open formats: json, csv",
       "needs": "No open geospatial formats (GeoTIFF/COG, GeoPackage)"
     },
     {
