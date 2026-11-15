@@ -227,7 +227,7 @@ REDD_clean <- clean_membership(
 
 REDD_best_summary <- summarise_membership(
   REDD_clean,
-  keep_all = FALSE,
+  keep_all = TRUE,
   which_round = the_round
 )
 
@@ -405,13 +405,72 @@ writeLines(qml_lines, here::here(out_dir, xref_qml_file))
 # ### Convert vector to raster using `fasterize`
 
 # ### Combined attribute table (vector data)
-# REDD_xy_best <- REDD_xy |>
-#   left_join(
-#     REDD_best_summary,
-#     by = c("sa_code" = "MAPUNIT"),
-#     relationship = "many-to-one"
-#   ) |>
-#   left_join(efg_pixel_values, by = "EFG")
+
+REDD_xy_best <- unique(mapped_units) |>
+  left_join(
+    REDD_best_summary,
+    by = c("re_name" = "MAPUNIT"),
+    relationship = "many-to-many"
+  ) |>
+  left_join(efg_pixel_values, by = "EFG")
+
+REDD_xy_best |>
+  group_by(re_full, EFG) |>
+  summarise(agg_memb = sum(prop_memb * proportion), .groups = "drop") # slice max
+
+
+REDD_xy_best <- REDD_xy |>
+  left_join(
+    REDD_best_summary,
+    by = c("re1" = "MAPUNIT"),
+    relationship = "many-to-one"
+  ) |>
+  left_join(efg_pixel_values, by = "EFG")
+
+# REDD_xy_best |> transmute(re1,EFG,prop_memb,pc1,prop_memb_w=pc1*prop_memb) |> pull(prop_memb_w) |> hist()
+
+REDD_xy_2nd <- REDD_xy |>
+  left_join(
+    REDD_best_summary,
+    by = c("re2" = "MAPUNIT"),
+    relationship = "many-to-one"
+  ) |>
+  left_join(efg_pixel_values, by = "EFG")
+
+# REDD_xy_2nd |> transmute(re2,EFG,prop_memb,pc2,prop_memb_w=pc2*prop_memb) |> pull(prop_memb_w) |> hist()
+
+REDD_xy_compare <- bind_cols(
+  {
+    REDD_xy_best |>
+      st_drop_geometry() |>
+      transmute(
+        re1,
+        re2,
+        pc1,
+        pc2,
+        EFG1 = EFG,
+        memb1 = prop_memb,
+        prop_memb_w1 = pc1 * prop_memb
+      )
+  },
+  {
+    REDD_xy_2nd |>
+      st_drop_geometry() |>
+      transmute(EFG2 = EFG, memb2 = prop_memb, prop_memb_w2 = pc2 * prop_memb)
+  }
+)
+
+REDD_xy_compare |>
+  filter(!is.na(EFG2)) |>
+  mutate(same = EFG1 == EFG2) |>
+  pull(same) |>
+  table()
+
+REDD_xy_compare |>
+  filter(!is.na(EFG2), EFG1 != EFG2) |>
+  mutate(second = prop_memb_w2 > prop_memb_w1) |>
+  pull(second) |>
+  table()
 
 # ### template raster file
 # rez <- 90
