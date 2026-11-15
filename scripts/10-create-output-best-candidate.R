@@ -3,7 +3,7 @@
 ## membership tables.
 
 ## Source classification and spatial data (units):
-## > DPIRD 006 (vegetation associations)
+## > REDD (regional ecosystems)
 ## Target classification (units):
 ## > IUCN Global Ecosystem Typology (ecosystem functional groups)
 ## Output format:
@@ -35,9 +35,9 @@ library(tidyr)
 library(stringr)
 
 #### Read and write other formats
-library(readxl)
-library(foreign)
-library(jsonlite)
+# library(readxl)
+# library(foreign)
+# library(jsonlite)
 
 #### For loops
 library(foreach)
@@ -73,30 +73,67 @@ source(here::here("scripts", "functions.R"))
 the_round <- 3
 epsg_code <- "EPSG:9473" # Australian Albers
 
+lut_file <- here::here(gisdata_dir, "REDD_v13.1_2024.csv")
+gis_file <- here::here(
+  gisdata_dir,
+  "QSC_Extracted_Data_20250827_210544309483-12528",
+  "data.gpkg"
+)
+
 
 ## Step 1: data preparation
 
 ### Lookup table source classification
 
-lut_file <- here::here(
-  gisdata_dir,
-  "preeuropeanvegetationlutsummary-may2012.xlsx"
+LUT <- read_csv(lut_file) |>
+  mutate(eligible = DEFUNCT == "Active")
+
+# Read GIS data
+
+REDD_xy <- read_sf(gis_file) |>
+  st_transform(crs(epsg_code))
+
+re_labels <- str_split_fixed(REDD_xy$re_label, "/", 5) |> data.frame()
+
+d0 <- pivot_longer(
+  re_labels,
+  everything(),
+  names_to = "re_component",
+  values_to = "NAME"
 )
 
-LUT <- read_xlsx(lut_file) |>
-  mutate(
-    `System-Association Code` = as.character(round(
-      `System-Association Code`,
-      2
-    )),
-    eligible = TRUE
-  )
+d1 <- REDD_xy |>
+  st_drop_geometry() |>
+  pivot_longer(
+    cols = all_of(sprintf("re%s", 1:5)),
+    names_to = "sub_component",
+    values_to = "re_name"
+  ) |>
+  select(re_full = re, sub_component, re_name)
 
-DPIRD_LUT <- lookup_tbl(
-  LUT,
-  id = "System-Association Code",
-  name = "Original Association Description",
-  eligible = "eligible"
+d2 <- REDD_xy |>
+  st_drop_geometry() |>
+  pivot_longer(
+    cols = all_of(sprintf("pc%s", 1:5)),
+    names_to = "pc_component",
+    values_to = "proportion"
+  ) |>
+  select(pc_component, proportion)
+
+mapped_units <- bind_cols(d0, d1, d2) |> filter(NAME != "")
+
+MAP_LUT <- mapped_units |>
+  transmute(NAME, re_name, mapped = TRUE) |>
+  unique() |>
+  left_join(LUT, by = "NAME") |>
+  select(NAME, re_name, SHORT_DESCRIPTION, mapped)
+
+
+REDD_LUT <- lookup_tbl(
+  MAP_LUT,
+  id = "re_name",
+  name = "SHORT_DESCRIPTION",
+  eligible = "mapped"
 )
 
 ### Lookup table target classification
@@ -116,13 +153,13 @@ memb_data <- foreach(
       n_max = 12,
       show_col_types = F
     )[, 1:2]
-    data <- read_csv(here::here(xref_dir, j), skip = 13, show_col_types = F)
+    data <- read_csv(here::here(xref_dir, j), skip = 12, show_col_types = F)
     stringr::str_extract(j, "V[0-9]")
     cat(sprintf(
       "Read %s, interpreter %s\n%s\n",
       j,
       metadata[1, 2],
-      metadata[12, 2]
+      metadata[11, 2]
     ))
 
     if ("EFG_1" %in% colnames(data)) {
@@ -131,7 +168,7 @@ memb_data <- foreach(
 
       pivot_wide_membership_table(
         xref = data,
-        original_names = "System-Association Code",
+        original_names = "MAPUNIT",
         target_names = sprintf("EFG_%s", 1:4),
         membership_values = sprintf("memb_%s", 1:4),
         expert_name = metadata[[1, 2]],
@@ -144,76 +181,71 @@ memb_data |>
   filter(!is.na(memb), memb > 0) |>
   group_by(expert, round) |>
   summarise(
-    `source ids` = n_distinct(`System-Association Code`),
+    `source ids` = n_distinct(`MAPUNIT`),
     `target ids` = n_distinct(EFG),
     .groups = "drop"
   )
 
 ## Step 2: data validation
 
-DPIRD_memb <- memb_data |>
+REDD_memb <- memb_data |>
   filter(!is.na(memb), memb > 0) |>
-  mutate(
-    `System-Association Code` = as.character(round(
-      `System-Association Code`,
-      2
-    ))
-  ) |>
   membership_tbl(
-    source_id = "System-Association Code",
+    source_id = "MAPUNIT",
     target_id = "EFG",
     membership = "memb",
     interpreter = "expert",
     round = "round"
   )
 
-check_membership(DPIRD_memb, source = DPIRD_LUT, target = IUCN_GET)
+check_membership(REDD_memb, source = REDD_LUT, target = IUCN_GET)
 
-DPIRD_memb |>
+REDD_memb |>
   filter(!EFG %in% IUCN_GET$efg_id) |>
   summarise(
-    n_distinct(`System-Association Code`),
+    n_distinct(`MAPUNIT`),
     .by = c(expert, round, EFG)
   )
 
-DPIRD_clean <- clean_membership(
-  DPIRD_memb,
-  source = DPIRD_LUT,
+REDD_clean <- clean_membership(
+  REDD_memb,
+  source = REDD_LUT,
   target = IUCN_GET,
   action = "check"
 )
 
-DPIRD_clean |>
-  mutate(dups = grepl("duplicated ass", flag)) |>
-  summarise(
-    source_units = n_distinct(`System-Association Code`),
-    .by = c(expert, round, dups)
-  )
+# REDD_clean |>
+#   mutate(dups = grepl("duplicated ass", flag)) |>
+#   summarise(
+#     source_units = n_distinct(`MAPUNIT`),
+#     .by = c(expert, round, dups)
+#   )
 
-DPIRD_clean <- DPIRD_clean |> filter(!grepl("duplicated record", flag))
+# REDD_clean <- REDD_clean |> filter(!grepl("duplicated record", flag))
 
-## Step 3: synthesis
+# ## Step 3: synthesis
 
-DPIRD_best_summary <- summarise_membership(
-  DPIRD_clean,
+REDD_best_summary <- summarise_membership(
+  REDD_clean,
   keep_all = FALSE,
   which_round = the_round
 )
 
-## Step 4: read additional data for outputs
+# ## Step 4: read additional data for outputs
 
-### 4a. Read GIS data
+f1 <- REDD_xy$re %in% REDD_best_summary$MAPUNIT
+f2 <- REDD_xy$re1 %in% REDD_best_summary$MAPUNIT
+f3 <- REDD_xy$re2 %in% REDD_best_summary$MAPUNIT
+f4 <- REDD_xy$re3 %in% REDD_best_summary$MAPUNIT
+f5 <- REDD_xy$re4 %in% REDD_best_summary$MAPUNIT
+f6 <- REDD_xy$re5 %in% REDD_best_summary$MAPUNIT
 
-DPIRD_xy <- read_sf(here::here(
-  gisdata_dir,
-  "Pre_European_Vegetation_DPIRD_006_WA_GDA2020_Public.gpkg"
-)) |>
-  mutate(sa_code = as.character(round(sa_code, 1))) |>
-  st_transform(crs(epsg_code))
+table(f1 | f2 | f3 | f4 | f5 | f6)
 
+REDD_xy |> filter(!(f1 | f2 | f3 | f4 | f5 | f6))
 
-### 4b. Standard pixel values for Global Ecosystem Atlas
-### + the T5.6
+# ### 4b. Standard pixel values for Global Ecosystem Atlas
+# ### + the T5.6
 
 t5_6_info <- tibble(
   EFG = "T5.6",
@@ -232,27 +264,28 @@ efg_info <- geco_efg_data() |>
 efg_pixel_values <- efg_info |>
   select(EFG, efg_pixel_value)
 
-## Step 5: export outputs
+# ## Step 5: export outputs
 
-xref_best_file <- "DPIRD-xref-best-candidate.csv"
+xref_best_file <- "REDD-xref-best-candidate.csv"
 efg_lookup_file <- "IUCN-GET-pixel-lookup.csv"
-xref_clr_file <- "DPIRD-xref-target.clr"
-xref_aux_file <- "DPIRD-xref-target.tiff.aux.xml"
-xref_qml_file <- "DPIRD-xref-target.qml"
-xref_tiff_file <- "DPIRD-xref-target.tiff"
-memb_tiff_file <- "DPIRD-xref-membership.tiff"
-supp_tiff_file <- "DPIRD-xref-supporting.tiff"
+xref_clr_file <- "REDD-xref-target.clr"
+xref_aux_file <- "REDD-xref-target.tiff.aux.xml"
+xref_qml_file <- "REDD-xref-target.qml"
+xref_tiff_file <- "REDD-xref-target.tiff"
+memb_tiff_file <- "REDD-xref-membership.tiff"
+supp_tiff_file <- "REDD-xref-supporting.tiff"
 
-### 5a. Export tabular synthesis tables
+# ### 5a. Export tabular synthesis tables
 
-xref_best_tbl <- DPIRD_LUT |>
+xref_best_tbl <- REDD_LUT |>
   as_tibble() |>
-  left_join(DPIRD_best_summary, by = "System-Association Code") |>
+  left_join(REDD_best_summary, by = c("re_name" = "MAPUNIT")) |>
   left_join(efg_info, by = "EFG") |>
   select(
-    `System-Association Code`,
-    `Original Association Description`,
-    eligible,
+    NAME,
+    re_name,
+    SHORT_DESCRIPTION,
+    mapped,
     EFG,
     efg_name,
     efg_pixel_value,
@@ -270,13 +303,12 @@ write_csv(
   here::here(out_dir, xref_best_file)
 )
 
-
-### 5b. Export tabular lookup  tables
+# ### 5b. Export tabular lookup  tables
 
 efg_lookup_tbl <- xref_best_tbl |>
   filter(!is.na(EFG)) |>
   summarise(
-    n_DPIRD_units = n_distinct(`System-Association Code`),
+    n_REDD_units = n_distinct(re_name),
     .by = c(efg_pixel_value, EFG, efg_name, efg_hex_code, efg_rgb_code)
   ) |>
   left_join(
@@ -294,7 +326,7 @@ efg_lookup_tbl <- xref_best_tbl |>
     biome_name,
     efg_hex_code,
     efg_rgb_code,
-    n_DPIRD_units
+    n_REDD_units
   ) |>
   arrange(efg_pixel_value)
 
@@ -303,7 +335,7 @@ write_csv(
   here::here(out_dir, efg_lookup_file)
 )
 
-### 5c. Export colour file
+# ### 5c. Export colour file
 
 clr_lines <- efg_lookup_tbl |>
   tidyr::separate(efg_rgb_code, into = c("R", "G", "B"), sep = ",") |>
@@ -325,7 +357,7 @@ writeLines(
   here::here(out_dir, xref_clr_file)
 )
 
-### 5d. Export style file
+# ### 5d. Export style file
 
 qml_entries <- efg_lookup_tbl |>
   transmute(
@@ -369,93 +401,91 @@ qml_lines <- c(
 )
 writeLines(qml_lines, here::here(out_dir, xref_qml_file))
 
+# ### 5f. Export raster files
+# ### Convert vector to raster using `fasterize`
 
-### 5f. Export raster files
-### Convert vector to raster using `fasterize`
+# ### Combined attribute table (vector data)
+# REDD_xy_best <- REDD_xy |>
+#   left_join(
+#     REDD_best_summary,
+#     by = c("sa_code" = "MAPUNIT"),
+#     relationship = "many-to-one"
+#   ) |>
+#   left_join(efg_pixel_values, by = "EFG")
 
-### Combined attribute table (vector data)
-DPIRD_xy_best <- DPIRD_xy |>
-  left_join(
-    DPIRD_best_summary,
-    by = c("sa_code" = "System-Association Code"),
-    relationship = "many-to-one"
-  ) |>
-  left_join(efg_pixel_values, by = "EFG")
+# ### template raster file
+# rez <- 90
+# REDD_raster <- raster(REDD_xy, res = rez)
 
-### template raster file
-rez <- 90
-DPIRD_raster <- raster(DPIRD_xy, res = rez)
+# #### Best candidate
 
-#### Best candidate
+# target_raster <- fasterize(
+#   REDD_xy_best,
+#   REDD_raster,
+#   field = "efg_pixel_value",
+#   fun = "first"
+# ) |>
+#   rast()
 
-target_raster <- fasterize(
-  DPIRD_xy_best,
-  DPIRD_raster,
-  field = "efg_pixel_value",
-  fun = "first"
-) |>
-  rast()
+# ctab <- efg_info |>
+#   filter(EFG %in% REDD_xy_best$EFG) |>
+#   transmute(value = efg_pixel_value, color = efg_hex_code)
+# coltab(target_raster) <- ctab
 
-ctab <- efg_info |>
-  filter(EFG %in% DPIRD_xy_best$EFG) |>
-  transmute(value = efg_pixel_value, color = efg_hex_code)
-coltab(target_raster) <- ctab
+# rast_metadata <- c(
+#   PROJECT = "Ecosystem Indicators Workflows",
+#   TITLE = "Best candidate ecosystem functional group",
+#   DESCRIPTION = "Synthesis of crossreference from REDD 006 to IUCN GET"
+# )
+# metags(target_raster) <- rast_metadata
+# raster_attributes <- efg_lookup_tbl |>
+#   transmute(
+#     id = coalesce(efg_pixel_value, 255L),
+#     label = paste(EFG, efg_name, sep = " ")
+#   )
+# levels(target_raster) <- raster_attributes
+# writeRaster(
+#   target_raster,
+#   here::here(out_dir, xref_tiff_file),
+#   overwrite = TRUE
+# )
 
-rast_metadata <- c(
-  PROJECT = "Ecosystem Indicators Workflows",
-  TITLE = "Best candidate ecosystem functional group",
-  DESCRIPTION = "Synthesis of crossreference from DPIRD 006 to IUCN GET"
-)
-metags(target_raster) <- rast_metadata
-raster_attributes <- efg_lookup_tbl |>
-  transmute(
-    id = coalesce(efg_pixel_value, 255L),
-    label = paste(EFG, efg_name, sep = " ")
-  )
-levels(target_raster) <- raster_attributes
-writeRaster(
-  target_raster,
-  here::here(out_dir, xref_tiff_file),
-  overwrite = TRUE
-)
+# # out_file <- here::here(out_dir, "REDD-xref-target.tiff.vat.dbf")
+# # write.dbf(data.frame(raster_attributes), file = out_file)
 
-# out_file <- here::here(out_dir, "DPIRD-xref-target.tiff.vat.dbf")
-# write.dbf(data.frame(raster_attributes), file = out_file)
+# #### Best candidate membership
 
-#### Best candidate membership
+# memb_raster <- fasterize(
+#   REDD_xy_best,
+#   REDD_raster,
+#   field = "prop_memb",
+#   fun = "max"
+# ) |>
+#   rast()
 
-memb_raster <- fasterize(
-  DPIRD_xy_best,
-  DPIRD_raster,
-  field = "prop_memb",
-  fun = "max"
-) |>
-  rast()
+# rast_metadata[
+#   "TITLE"
+# ] <- "Membership for the best candidate ecosystem functional group"
 
-rast_metadata[
-  "TITLE"
-] <- "Membership for the best candidate ecosystem functional group"
+# metags(memb_raster) <- rast_metadata
 
-metags(memb_raster) <- rast_metadata
+# writeRaster(memb_raster, here::here(out_dir, memb_tiff_file), overwrite = TRUE)
 
-writeRaster(memb_raster, here::here(out_dir, memb_tiff_file), overwrite = TRUE)
+# #### Supporting interpreters
 
-#### Supporting interpreters
+# supp_raster <- fasterize(
+#   REDD_xy_best,
+#   REDD_raster,
+#   field = "supporting",
+#   fun = "max"
+# ) |>
+#   rast()
 
-supp_raster <- fasterize(
-  DPIRD_xy_best,
-  DPIRD_raster,
-  field = "supporting",
-  fun = "max"
-) |>
-  rast()
+# rast_metadata["TITLE"] <- "Nr. of interpreters supporting assignment"
 
-rast_metadata["TITLE"] <- "Nr. of interpreters supporting assignment"
+# metags(supp_raster) <- rast_metadata
 
-metags(supp_raster) <- rast_metadata
-
-writeRaster(supp_raster, here::here(out_dir, supp_tiff_file), overwrite = TRUE)
-
+# writeRaster(supp_raster, here::here(out_dir, supp_tiff_file), overwrite = TRUE)
 
 ## Step X: Benchmarking and session info
 
