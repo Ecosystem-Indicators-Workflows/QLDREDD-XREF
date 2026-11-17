@@ -1,119 +1,145 @@
 {
-    "@context": "https://w3id.org/codemeta/3.0",
-    "@type": "SoftwareSourceCode",
-    "name": "TEMPLATE-XREF",
-    "description": "Cross-referencing the `Regional Ecosystems` of `Queensland` to the IUCN Global Ecosystem Typology",
-    "codeRepository": "https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF",
-    "issueTracker": "https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF/issues",
-    "readme": "https://raw.githubusercontent.com/Ecosystem-Indicators-Workflows/QLDREDD-XREF/refs/heads/main/README.md",
-    "version": "0.1.0",
-    "dateCreated": "2026-11-15",
-    "dateModified": "2026-11-15",
-    "license": "https://spdx.org/licenses/MIT.html",
-    "developmentStatus": "active",
-    "programmingLanguage": [
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": "SoftwareSourceCode",
+  "author": [
+    {
+      "@id": "https://orcid.org/0000-0002-9554-3395",
+      "@type": "Person",
+      "affiliation": [
         {
-            "@type": "ComputerLanguage",
-            "name": "R",
-            "url": "https://www.r-project.org/"
+          "@type": "Organization",
+          "name": "Centre for Ecosystem Science, UNSW Sydney"
         },
         {
-            "@type": "ComputerLanguage",
-            "name": "Python",
-            "url": "https://www.python.org/"
+          "@type": "Organization",
+          "name": "IUCN Commission on Ecosystem Management"
         }
-    ],
-    "runtimePlatform": "TODO: e.g. R >= 4.4, Python >= 3.11",
-    "softwareRequirements": [
-        {
-            "@type": "SoftwareApplication",
-            "name": "TODO: package name",
-            "version": "TODO",
-            "identifier": "TODO",
-            "runtimePlatform": "R"
-        }
-    ],
-    "keywords": [
-        "ecosystem indicators",
-        "IUCN Global Ecosystem Typology",
-        "FAIR",
-        "vocabulary crosswalk",
-        "Queensland"
-    ],
-    "author": [
-    {
-        "@type": "Person",
+      ],
       "familyName": "Ferrer-Paris",
-      "givenName": "José R.",
-      "@id": "https://orcid.org/0000-0002-9554-3395",
-      "affiliation": [{
-        "@type": "Organization",
-        "name":"Centre for Ecosystem Science, UNSW Sydney"
-      },{
-        "@type": "Organization",
-        "name":"IUCN Commission on Ecosystem Management"
-      }]
+      "givenName": "José R."
     },
     {
-        "@type": "Person",
-      "familyName": "Tozer",
-      "givenName": "Mark G.",
       "@id": "https://orcid.org/0000-0002-7373-0077",
-      "affiliation": [{
-        "@type": "Organization",
-        "name":"Centre for Ecosystem Science, UNSW Sydney"
-      }]
-    },
-    {
-        "@type": "Person",
-      "familyName": "Keith",
-      "givenName": "David",
-      "@id": "https://orcid.org/0000-0002-7627-4150",
-      "affiliation": [{
-        "@type": "Organization",
-        "name":"Centre for Ecosystem Science, UNSW Sydney"
-      },{
-        "@type": "Organization",
-        "name":"IUCN Commission on Ecosystem Management"
-      }]
-    }],
-    "contributor": [
-    {
       "@type": "Person",
-      "familyName": "Gould", 
-      "givenName":"Elliot",
-      "@id": "https://orcid.org/0000-0002-6585-538X",
-      "affiliation": [{
-        "@type": "Organization",
-        "name":"Centre for Ecosystem Science, UNSW Sydney"
-      }]
+      "affiliation": [
+        {
+          "@type": "Organization",
+          "name": "Centre for Ecosystem Science, UNSW Sydney"
+        }
+      ],
+      "familyName": "Tozer",
+      "givenName": "Mark G."
     },
     {
-      "familyName": "Singh", 
-      "givenName":"Abhimanyu Raj",
+      "@id": "https://orcid.org/0000-0002-7627-4150",
+      "@type": "Person",
+      "affiliation": [
+        {
+          "@type": "Organization",
+          "name": "Centre for Ecosystem Science, UNSW Sydney"
+        },
+        {
+          "@type": "Organization",
+          "name": "IUCN Commission on Ecosystem Management"
+        }
+      ],
+      "familyName": "Keith",
+      "givenName": "David"
+    }
+  ],
+  "codeRepository": "https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF",
+  "continuousIntegration": "TODO: CI URL, or delete",
+  "contributor": [
+    {
+      "@id": "https://orcid.org/0000-0002-6585-538X",
+      "@type": "Person",
+      "affiliation": [
+        {
+          "@type": "Organization",
+          "name": "Centre for Ecosystem Science, UNSW Sydney"
+        }
+      ],
+      "familyName": "Gould",
+      "givenName": "Elliot"
+    },
+    {
       "@id": "https://orcid.org/0000-0002-2279-7060",
-      "affiliation": [{
-        "@type": "Organization",
-        "name":"Centre for Ecosystem Science, UNSW Sydney"
-      },{
-        "@type": "Organization",
-        "name":"QCIF"
-      }]
-    }],
-    "maintainer": {
-        "@id": "https://orcid.org/0000-0002-9554-3395"
+      "affiliation": [
+        {
+          "@type": "Organization",
+          "name": "Centre for Ecosystem Science, UNSW Sydney"
+        },
+        {
+          "@type": "Organization",
+          "name": "QCIF"
+        }
+      ],
+      "familyName": "Singh",
+      "givenName": "Abhimanyu Raj"
     },
-    "isPartOf": {
-        "@type": "SoftwareSourceCode",
-        "name": "Ecosystem Indicator Workflows",
-        "identifier": "https://doi.org/10.3565/j5sq-a757"
+    {
+      "@id": "https://orcid.org/0000-0002-4806-9205",
+      "affiliation": [
+        {
+          "@type": "Organization",
+          "name": "James Cook University"
+        }
+      ],
+      "familyName": "Addicott",
+      "givenName": "Eda"
+    }
+  ],
+  "dateCreated": "2026-11-15",
+  "dateModified": "2026-11-15",
+  "description": "Cross-referencing the `Regional Ecosystems` of `Queensland` to the IUCN Global Ecosystem Typology",
+  "developmentStatus": "active",
+  "funder": {
+    "@id": "https://ror.org/038sjwq14",
+    "@type": "Organization",
+    "name": "Australian Research Data Commons (ARDC)"
+  },
+  "funding": "https://doi.org/10.3565/j5sq-a757",
+  "isPartOf": {
+    "@type": "SoftwareSourceCode",
+    "identifier": "https://doi.org/10.3565/j5sq-a757",
+    "name": "Ecosystem Indicator Workflows"
+  },
+  "issueTracker": "https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF/issues",
+  "keywords": [
+    "ecosystem indicators",
+    "IUCN Global Ecosystem Typology",
+    "FAIR",
+    "vocabulary crosswalk",
+    "Queensland"
+  ],
+  "license": "https://spdx.org/licenses/MIT.html",
+  "maintainer": {
+    "@id": "https://orcid.org/0000-0002-9554-3395"
+  },
+  "name": "TEMPLATE-XREF",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "R",
+      "url": "https://www.r-project.org/"
     },
-    "funder": {
-        "@type": "Organization",
-        "name": "Australian Research Data Commons (ARDC)",
-        "@id": "https://ror.org/038sjwq14"
-    },
-    "funding": "https://doi.org/10.3565/j5sq-a757",
-    "referencePublication": [],
-    "continuousIntegration": "TODO: CI URL, or delete"
+    {
+      "@type": "ComputerLanguage",
+      "name": "Python",
+      "url": "https://www.python.org/"
+    }
+  ],
+  "readme": "https://raw.githubusercontent.com/Ecosystem-Indicators-Workflows/QLDREDD-XREF/refs/heads/main/README.md",
+  "referencePublication": [],
+  "runtimePlatform": "TODO: e.g. R >= 4.4, Python >= 3.11",
+  "softwareRequirements": [
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "TODO",
+      "name": "TODO: package name",
+      "runtimePlatform": "R",
+      "version": "TODO"
+    }
+  ],
+  "version": "0.1.0"
 }

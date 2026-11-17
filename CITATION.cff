@@ -15,6 +15,10 @@ authors:
     family-names: Tozer
     affiliation: UNSW Sydney
     orcid: 'https://orcid.org/0000-0002-7373-0077'
+  - given-names: Eda
+    family-names: Addicott
+    affiliation: JCU
+    orcid: 'https://orcid.org/0000-0002-4806-9205'
   - given-names: David A.
     family-names: Keith
     affiliation: UNSW Sydney
@@ -22,6 +26,6 @@ authors:
 repository-code: >-
   https://github.com/Ecosystem-Indicators-Workflows/QLDREDD-XREFF
 license: CC-BY-4.0
-commit: 40ce3b35e467d3cf8f93dcfbc0f0b7221608c211
+commit: 615ab8513baff51d55f6b3747128e30abd46e59d
 version: 0.1.0
 date-released: '2026-11-15'
