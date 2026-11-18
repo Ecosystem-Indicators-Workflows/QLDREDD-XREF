@@ -1,3 +1,57 @@
+read_csv_meta_data <- function(
+  x,
+  metadata_rows = 12,
+  metadata_cols = 1:2,
+  interpreter_row = 1,
+  comment_row = 11
+) {
+  message("Using `read_csv_meta_data` from scripts/functions.R")
+  file_name <- basename(x)
+  metadata <- read_csv(
+    x,
+    col_names = c("name", "value"),
+    n_max = metadata_rows,
+    show_col_types = F
+  )[, metadata_cols]
+  data <- read_csv(x, skip = metadata_rows, show_col_types = F)
+  interpreter <- metadata[[interpreter_row, metadata_cols[2]]]
+
+  comment <- metadata[[comment_row, metadata_cols[2]]]
+
+  message(sprintf(
+    "Read %s, interpreter %s\n%s",
+    file_name,
+    interpreter,
+    comment
+  ))
+  guess_round <- str_extract(file_name, "(?<=V)[0-9]")
+  message(sprintf("Assigning this to round %s", guess_round))
+  return(structure(data, interpreter = interpreter, round = guess_round))
+}
+check_input_data <- function(
+  x,
+  check_duplicates,
+  compare_columns = c("EFG_1", "EFG_2", "EFG_3")
+) {
+  message("Using `check_input_data` from scripts/functions.R")
+  for (k in check_duplicates) {
+    if (any(duplicated(x[[k]]))) {
+      message(sprintf("duplicates in %s", k))
+    }
+  }
+  mtx <- combn(compare_columns, 2)
+  for (k in 1:ncol(mtx)) {
+    if (any(x[[mtx[1, k]]] == x[[mtx[2, k]]], na.rm = T)) {
+      message(sprintf(
+        "%s duplicates between %s and %s",
+        sum(x[[mtx[1, k]]] == x[[mtx[2, k]]], na.rm = T),
+        mtx[1, k],
+        mtx[2, k]
+      ))
+    }
+  }
+}
+
 pivot_wide_membership_table <- function(
   xref,
   original_names,
